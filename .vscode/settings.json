@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./Minha projeto-Presentaçao"
+    ],
+    "python.analysis.autoImportCompletions": false
+}
