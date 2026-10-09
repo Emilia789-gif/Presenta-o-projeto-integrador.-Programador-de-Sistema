@@ -8,7 +8,8 @@ from models.defensa_guardiao_da_red.linha_do_tempo import Linha_de_tempo
 from models.defensa_guardiao_da_red.ponto_cego import Pontocego
 from models.defensa_guardiao_da_red.seguro import Seguro
 from models.defensa_guardiao_da_red.rastreador import Alerta_automatica
-from models.repositorio import seguranca_repository, usuario_repository, bitacora_repository, vulnerabilidade_repository
+from repositorio import usuario_repository
+from repositorio import bitacora_repository, seguranca_repository, vulnerabilidade_repository, usuario_repository
 
 app = Flask(__name__)
 app.secret_key = 'seguridadderedes@5.$%@'
@@ -27,15 +28,15 @@ def cadastro():
     if request.method == 'POST':
         nome  = request.form['nome']
         email = request.form['email']
-        senha = generate_password_hash(request.form['senha'])
-        if usuario_repository.buscar_usuario_por_email(email) is not None:
-            return render_template('cadastro.html', error= 'Este e-mail já esta cadastro.')
-        else:
-            usuario = Usuario(nome, email, senha)
-            usuario_repository.criar_usuario(usuario)
-            return redirect(url_for('login'))
-    else:
-        return render_template('cadastro.html')
+        senha = request.form['senha']
+        usuario_existente = usuario_repository.buscar_usuario_por_email(email)
+        if usuario_existente:
+            return render_template('cadastro.html', error = 'Este e-mail já esta cadastrado!')
+        senha = generate_password_hash(senha)
+        usuario_existente = Usuario(nome, email, senha)
+        usuario_repository.salvar_usuario(nome, email, senha)
+        return redirect(url_for('login'))
+    return render_template('cadastro.html')
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -43,7 +44,7 @@ def login():
         email = request['email']
         senha = request['senha']
         usuario = usuario_repository.buscar_usuario_por_email(email)
-        if usuario and check_password_hash(usuario._senha, senha):
+        if usuario and check_password_hash(usuario.senha, senha):
             session['id_usuario'] = usuario.id
             return redirect(url_for('panel'))
         else:
@@ -55,6 +56,14 @@ def login():
 def logout():
     session.pop('id_usuario', None)
     return redirect(url_for('login'))
+
+@app.route('/admin')
+@login_required
+def admin():
+    id_usuario = session.get('id_usuario')
+    usuario = usuario_repository.buscar_usuario_por_id(id_usuario)
+    listar_usuarios = usuario_repository.listar_todos_usuarios()
+    return render_template('admin.html', usuario = usuario, usuarios = listar_usuarios)
 
 @app.route('/panel')
 @login_required
@@ -70,7 +79,7 @@ def seguranca_cibernetica():
 
 @app.route('/seguranca_cibernetica/<int:id_seguranca>', methods = ['GET', 'POST'])
 @login_required
-def editar_seguranca_cibernetica(id_seguranca):
+def seguranca_cibernetica(id_seguranca):
     seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca)
     if request.method == 'POST':
         senha_forte = request.form['senha_forte']
@@ -80,6 +89,14 @@ def editar_seguranca_cibernetica(id_seguranca):
         seguranca_repository.atualizar_seguranca_cibernetica(seguranca)
         return redirect(url_for('seguranca_cibernetica'))
     return render_template('editar_seguranca.html', seguranca = seguranca)
+
+@app.route('/seguranca_cibernetica/deletar/<int:id_seguramca>', methods = ['GET', 'POST'])
+@login_required
+def deletar_seguranca_cibernetica(id_seguranca):
+    if request.method == 'POST':
+        seguranca_repository.deletar_seguranca_cibernetica(id_seguranca)
+        return redirect(url_for('seguranca_cibernetica'))
+    return redirect(url_for('seguranca_cibernetica'))
 
 @app.route('/bitacora/<int:id_bitacora>', methods = ['GET', 'POST'])
 @login_required
@@ -93,9 +110,10 @@ def editar_bitacora(id_bitacora):
         bitacora.acao = acao
         bitacora.data = data
         bitacora = Bitacora(usuario,acao, data)
-        bitacora_repository.actualizar_bitacora(id_bitacora)
-        return redirect(url_for('Bitacora'))
-    return render_template('editar_bitacora.html')
+        bitacora_repository.actualizar_bitacora(bitacora)
+        return redirect(url_for('bitacora'))
+    return render_template('editar_bitacora.html', bitacora = bitacora)
+
 
 @app.route('/vulnerabilidade/<int:id_vulnerabilidade>', methods = ['GET', 'POST'])
 @login_required
@@ -113,34 +131,31 @@ def editar_vulnerabilidad(id_vulnerabilidade):
         return redirect(url_for('vulnerabilidade'))
     return render_template('editar_vulnerabilidade.html', vulnerabilidade = vulnerabilidade)
 
-@app.route('/seguraca_cibernetica/<int:id_seguranza_cibernetica>/defensa_guardiao_da_red')
+@app.route('/seguranca_cibernetica/<int:id_seguranca_cibernetica>/defesa_guardiao_da_red', methods=['GET', 'POST'])
 @login_required
-def defensa_guardiao_da_red(id_seguranca_cibernetica):
+def defesa_guardiao_da_red(id_seguranca_cibernetica):
+
     seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca_cibernetica)
+    
     if seguranca is None:
         return redirect(url_for('seguranca_cibernetica'))
+    
     if request.method == 'POST':
-        localizacao = request.form.get('localizacao')
-        monitoreo_de_patrones_de_inyeccao = request.form.get('monitoreo_de_patrones_de_inyeccao')
-        shadow_IT = request.form.get('shadow_IT')
-        registro = request.form.get('registro')
-        alerta_de_tempo_real = request.form.get('alerta_de_tempo_real')
-        linha_de_tempo = request.form.get('linha_de_tempo')
-        ponto_cego = request.form.get('ponto_cego')
-        rastreador = request.form.get('rastreador')
-        seguro = request.form.get('seguro')
-
-        seguranca.linha_de_tempo = linha_de_tempo
-        seguranca.ponto_cego = ponto_cego
-        seguranca.rastreador = rastreador
-        seguranca.seguro = seguro
-        seguranca = Linha_de_tempo(localizacao, monitoreo_de_patrones_de_inyeccao, registro)
-        seguranca = Pontocego(localizacao, monitoreo_de_patrones_de_inyeccao, shadow_IT)
-        seguranca = Seguro(localizacao, monitoreo_de_patrones_de_inyeccao, alerta_de_tempo_real)
-        seguranca = Alerta_automatica(localizacao, monitoreo_de_patrones_de_inyeccao)
-        seguranca_repository.atualizar_seguranca_cibernetica(seguranca_cibernetica)
+        seguranca.localizacao = request.form.get('localizacao')
+        seguranca.monitoreo_de_patrones_de_inyeccao = request.form.get('monitoreo_de_patrones_de_inyeccao')
+        seguranca.shadow_IT = request.form.get('shadow_IT')
+        seguranca.registro = request.form.get('registro')
+        seguranca.alerta_de_tempo_real = request.form.get('alerta_de_tempo_real')
+        seguranca.linha_de_tempo = request.form.get('linha_de_tempo')
+        seguranca.ponto_cego = request.form.get('ponto_cego')
+        seguranca.rastreador = request.form.get('rastreador')
+        seguranca.seguro = request.form.get('seguro')
+    
+        seguranca_repository.atualizar_seguranca_cibernetica(seguranca)
+        
         return redirect(url_for('seguranca_cibernetica'))
-    return render_template('defensa_guardiao_da_red.html', seguranca = seguranca)
+
+    return render_template('defesa_guardiao_da_red.html', seguranca=seguranca)
 
 if __name__ == '__main__':
     bitacora_repository.tabela_bitacora()

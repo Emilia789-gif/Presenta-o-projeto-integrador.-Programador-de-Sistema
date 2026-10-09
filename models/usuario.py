@@ -3,4 +3,4 @@ class Usuario:
         self.id = None
         self.nome = nome
         self.email = email
-        self._senha = senha
+        self.senha = senha

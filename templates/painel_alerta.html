@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title%}Meu Painel{% enblock %}
+
+{% block content %}
+
+<h1>Meu Painel</h1>
+{%if usuario%}
+    <p>Bem-vindo, {{usuario.nome}}!</p>
+{%endif%}
+    <p>Aqui estaõ suas informações pessoais.</p>
+{%endblock%}

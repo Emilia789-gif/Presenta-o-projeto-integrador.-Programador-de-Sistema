@@ -1,0 +1,45 @@
+{%extends "base.html"%}
+
+{%block title%}Editar Vulnerabilidade{%endblock%}
+
+{%block content%}
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h2 style="text-align: center; color: #2c3e50;">Editar Vulnerabilidade</h2>
+
+        {% if error %}
+            <p style="color: red; text-align: center; font-weight: bold;">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('editar_vulnerabilidade', id_seguranca=vulnerabilidade.id) }}">
+            
+            <label for="nome" style="display: block; margin-bottom: 5px;">Nome:</label>
+            <input type="text" id="nome" name="nome" required 
+                   value="{{ vulnerabilidade.nome }}" 
+                   style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+
+            <label for="descricao" style="display: block; margin-bottom: 5px;">Descrição:</label>
+            <textarea id="descricao" name="descricao" rows="4" required 
+                      style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">{{ vulnerabilidade.descricao }}</textarea>
+
+            <label for="impacto" style="display: block; margin-bottom: 5px;">Impacto:</label>
+            <select id="impacto" name="impacto" required 
+                    style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                <option value="Baixo" {% if vulnerabilidade.impacto == 'Baixo' %}selected{% endif %}>Baixo</option>
+                <option value="Médio" {% if vulnerabilidade.impacto == 'Médio' %}selected{% endif %}>Médio</option>
+                <option value="Alto" {% if vulnerabilidade.impacto == 'Alto' %}selected{% endif %}>Alto</option>
+                <option value="Crítico" {% if vulnerabilidade.impacto == 'Crítico' %}selected{% endif %}>Crítico</option>
+            </select>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" 
+                        style="flex: 1; padding: 10px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer;">
+                    Salvar Alterações
+                </button>
+                <a href="{{ url_for('seguranca_cibernetica') }}" 
+                   style="flex: 1; padding: 10px; background-color: #95a5a6; color: white; border: none; border-radius: 4px; font-size: 1em; text-align: center; text-decoration: none;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

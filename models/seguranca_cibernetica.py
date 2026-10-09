@@ -1,7 +1,7 @@
 from models.bitacora import Bitacora
 from models.defensa_guardiao_da_red.rastreador import Alerta_automatica
 
-class SegurancaCibernetica:
+class Seguranca_Cibernetica:
     segurança_cibernetica = []
     def __int__(self, bitacora, olho_do_sistema, radar_de_acesso, alerta_de_riesgo, porta_dos_fundos, vulnerabilidade):
         self.bitacora = bitacora
@@ -13,7 +13,7 @@ class SegurancaCibernetica:
         self._status = False
         self._bitacora = []
         self._vulnerabilidade = []
-        SegurancaCibernetica.segurança_cibernetica.append(self)
+        Seguranca_Cibernetica.segurança_cibernetica.append(self)
 
     def __str__(self):
         return f"Bitacora: {self.bitacora} \n |Defensa_do_diário_de_borde: {self.olho_do_sistema} \n |Guardião_da_red: {self.radar_de_acesso} \n |Falhas_de_vulnerabilidade: {self.alerta_de_riesgo} \n |Guardião_da_red: {self.porta_dos_fundos} \n |Vulnerabilidade: {str(self.vulnerabilidade)} \n |Status: {self.ativo}"

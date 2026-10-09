@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title%}Painel de Administração{%endblock%}
+
+{% block conten %}
+
+    <h1>Bem-vindo ao Painel de Administração</h1>
+
+    {% if usuario%}
+        <p>Oi, {{Usuario.Emeli Andreina}} (Admin)</p>
+    {%endif%}
+
+    <nav>
+        <ul>
+            <li><a href="{{url_for('panel')}}">Ir para o meu Painel</a></li>
+            <li><a href="{{url_for('logout')}}">Sair (Logout)</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>Gerenciamento de Usuário</h2>
+        <p>Aqui você pode listar, editar ou excluir usuário.</p>
+        <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 8px;">Nome</th>
+                    <th style="padding: 8px;">E-mail</th>
+                    <th  style="padding: 8px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for u in usuarios%}
+                <tr>
+                    <td style="padding: 8px;">{{u.nome}}</td>
+                    <td style="padding: 8px;">{{u.email}}</td>
+                    <td style="padding: 8px;">
+                        <a href="{{url_for('editar_usuario', email=u.email)}}">Editar</a>
+                        <a href="{{url_for('excluir_usuario', email=u.email)}}"onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
+                    </td>
+                </tr>
+                {%else%}
+                <tr>
+                    <td colspan="3" style="padding: 8px; text-align: center;">Nunhum usuário cadastrado.</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </section>
+    <section>
+        <h2>Configurações do Sistema</h2>
+        <p>Opções de configuração globlal.</p>
+    </section>
+{%endblock%}

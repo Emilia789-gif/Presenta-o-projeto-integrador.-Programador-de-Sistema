@@ -1,8 +1,8 @@
-from database.db import conectar
+from database.db import connector
 from models.usuario import Usuario 
 
 def tabela_usuario():
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS usuario (id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(255), email VARCHAR(255) UNIQUE, senha VARCHAR(255)NOT NULL)")
     conexao.commit()
@@ -10,7 +10,7 @@ def tabela_usuario():
     conexao.close()
 
 def criar_usuario(usuario):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("INSERT INTO usuario (nome, email, senha) VALUES (%s, %s, %s)", (usuario.nome, usuario.email, usuario.senha))
     conexao.commit()
@@ -20,7 +20,7 @@ def criar_usuario(usuario):
     return usuario
 
 def buscar_usuario_por_email(email):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, nome, email, senha FROM usuario WHERE email = %s", (email,))
     resultado = cursor.fetchone()
@@ -34,7 +34,7 @@ def buscar_usuario_por_email(email):
     return None
 
 def buscar_senha_por_email(email):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT senha FROM usuario WHERE email = %s", (email,))
     resultado = cursor.fetchone()
@@ -44,8 +44,21 @@ def buscar_senha_por_email(email):
         return resultado[0]
     return None
 
+def salvar_usuario(self, nome, email, senha):
+    cursor = self.db.cursor()
+    sql = "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)"
+    valores = (nome, email, senha)
+    cursor.execute(sql, valores)
+    self.db.commit()
+    return cursor.lastrowid
+
+def listar_todos_usuarios(self):
+    cursor = self.db.cursor(dictionary = True)
+    cursor.execute("SELECT * FROM usuario")
+    return cursor.fetchall()
+
 def buscar_usuario_por_id(id_usuario):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, nome, email, senha FROM usuario WHERE id = %s", (id_usuario,))
     resultado = cursor.fetchone()

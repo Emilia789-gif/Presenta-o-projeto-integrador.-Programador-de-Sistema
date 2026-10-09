@@ -1,11 +1,11 @@
 from asyncio import open_connection
 
-from database.db import conectar
+from database.db import connector
 from models.vulnerabilidade import Vulnerabilidade
 
 
 def tabela_vulnerabilidade():
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS vulnerabilidade (id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(255), descricao TEXT, impacto VARCHAR(255))"
@@ -15,7 +15,7 @@ def tabela_vulnerabilidade():
     conexao.close()
 
 def criar_vulnerabilidade(vulnerabilidade):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute(
         "INSERT INTO vulnerabilidade (nome, descricao, impacto) VALUES (%s, %s, %s)",
@@ -30,7 +30,7 @@ def criar_vulnerabilidade(vulnerabilidade):
 
 
 def buscar_vulnerabilidade_por_nome(nome):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute(
         "SELECT id, nome, descricao, impacto FROM vulnerabilidade WHERE nome = %s", (nome,)
@@ -41,7 +41,7 @@ def buscar_vulnerabilidade_por_nome(nome):
     return [Vulnerabilidade(id, nome, descricao, impacto) for (id, nome, descricao, impacto) in vulnerabilidades]
 
 def buscar_vulnerabilidade_por_descricao(descripcao):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor(dictionary = True)
     query = "SELECT * FROM vulnerabilidade WHERE descricao LIKE %s"
     cursor.execute(query, ('%' + descripcao + '%',))
@@ -51,7 +51,7 @@ def buscar_vulnerabilidade_por_descricao(descripcao):
     return resultado
 
 def buscar_vulnerabilidade_por_impacto(impacto):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute(
         "SELECT id, nome, descricao, impacto FROM vulnerabilidade WHERE impacto = %s", (impacto,)
@@ -62,7 +62,7 @@ def buscar_vulnerabilidade_por_impacto(impacto):
     return [Vulnerabilidade(id, nome, descricao, impacto) for (id, nome, descricao, impacto) in vulnerabilidades]
 
 def buscar_vulnerabilidade_por_id(id_vulnerabilidade):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute(
         "SELECT id, nome, descricao, impacto FROM vulnerabilidade WHERE id = %s", (id_vulnerabilidade,)

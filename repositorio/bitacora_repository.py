@@ -1,8 +1,10 @@
-from database.db import conectar
+from asyncio import open_connection
+
+from database.db import connector
 from models.bitacora import Bitacora
 
 def tabela_bitacora():
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS bitacora (id INT AUTO_INCREMENT PRIMARY KEY, usuario VARCHAR(255), acao VARCHAR(255), data DATETIME NOT NULL)")
     conexao.commit()
@@ -10,7 +12,7 @@ def tabela_bitacora():
     conexao.close()
 
 def criar_bitacora(bitacora):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("INSERT INTO bitacora (usuario, acao, data) VALUES (%s, %s, %s)", (bitacora.usuario, bitacora.acao, bitacora.data))
     conexao.commit()
@@ -21,7 +23,7 @@ def criar_bitacora(bitacora):
     return bitacora
 
 def buscar_bitacora_por_usuario(usuario):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, usuario, acao, data FROM bitacora WHERE usuario = %s", (usuario,))
     resultados = cursor.fetchall()
@@ -30,7 +32,7 @@ def buscar_bitacora_por_usuario(usuario):
     return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
 def buscar_bitacora_por_acao(acao):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, usuario, acao, data FROM bitacora WHERE acao = %s", (acao,))
     resultados = cursor.fetchall()
@@ -39,7 +41,7 @@ def buscar_bitacora_por_acao(acao):
     return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
 def buscar_bitacora_por_data(data):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, usuario, acao, data FROM bitacora WHERE data = %s", (data,))
     resultados = cursor.fetchall()
@@ -47,18 +49,25 @@ def buscar_bitacora_por_data(data):
     conexao.close()
     return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
-def actualizar_bitacora(id_bitacora, usuario, acao, data):
-    conexao = conectar()
-    cursor = conexao.cursor()
-    sql = "UPDATE bitacora SET usuario = %s, acao = %s, data = %s WHERE id = %s" 
-    valores = (usuario, acao, data, id_bitacora)
-    cursor.execute(sql, valores)
-    conexao.commit()
+def actualizar_bitacora(self, bitacora):
+    conexion = open_connection()
+    cursor = conexion.cursor()
+
+    query = "UPDATE bitacora SET usuario = %s, acao = %s, data = %s WHERE id = %s"
+
+    cursor.execute(query,(
+        bitacora.usuario,
+        bitacora.acao,
+        bitacora.data,
+        bitacora.id
+    ))
+
+    conexion.commit()
     cursor.close()
-    conexao.close()
+    conexion.close()
 
 def buscar_bitacora_por_id(id_bitacora):
-    conexao = conectar()
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, usuario, acao, data FROM bitacora WHERE id = %s", (id_bitacora,))
     resultado = cursor.fetchone()
