@@ -12,7 +12,7 @@
         <nav>
             <ul>
                 {% if session.get('id_usuario') %}
-                    <li><a href="{{ url_for('panel') }}">Painel</a></li>
+                    <li><a href="{{ url_for('painel') }}">Painel</a></li>
                     <li><a href="{{ url_for('admin') }}">Admin</a></li>
                     <li><a href="{{ url_for('logout') }}">Sair</a></li>
                 {% else %}

@@ -1,4 +1,5 @@
 from functools import wraps
+from typing import Self
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.usuario import Usuario
@@ -8,7 +9,6 @@ from models.defensa_guardiao_da_red.linha_do_tempo import Linha_de_tempo
 from models.defensa_guardiao_da_red.ponto_cego import Pontocego
 from models.defensa_guardiao_da_red.seguro import Seguro
 from models.defensa_guardiao_da_red.rastreador import Alerta_automatica
-from repositorio import usuario_repository
 from repositorio import bitacora_repository, seguranca_repository, vulnerabilidade_repository, usuario_repository
 
 app = Flask(__name__)
@@ -20,33 +20,34 @@ def login_required(funcao):
         if 'id_usuario' not in session:
             return redirect(url_for('login'))
         else:
-            return(*args, *kwargs)
+            return funcao(*args, **kwargs)
     return verificar
     
 @app.route('/cadastro', methods = ['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
-        nome  = request.form['nome']
-        email = request.form['email']
-        senha = request.form['senha']
+        nome  = request.form ['nome']
+        email = request.form ['email']
+        senha = request.form ['senha']
         usuario_existente = usuario_repository.buscar_usuario_por_email(email)
-        if usuario_existente:
+        if usuario_existente is not None:
             return render_template('cadastro.html', error = 'Este e-mail já esta cadastrado!')
-        senha = generate_password_hash(senha)
-        usuario_existente = Usuario(nome, email, senha)
-        usuario_repository.salvar_usuario(nome, email, senha)
+        senha_hash = generate_password_hash(senha)
+        usuario_existente = Usuario(nome, email, senha_hash)
+        usuario_repository.criar_usuario(usuario_existente)
         return redirect(url_for('login'))
     return render_template('cadastro.html')
 
-@app.route('/login', methods = ['GET', 'POST'])
+@app.route('/', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request['email']
-        senha = request['senha']
+        email = request.form ['email']
+        senha = request.form ['senha']
         usuario = usuario_repository.buscar_usuario_por_email(email)
+        print(f"DEBUG 2-Usuario encontrado: '{usuario}'")
         if usuario and check_password_hash(usuario.senha, senha):
             session['id_usuario'] = usuario.id
-            return redirect(url_for('panel'))
+            return redirect(url_for('painel'))
         else:
             return render_template('login.html', error = 'E-mail ou senha inválido.')
     else:
@@ -65,21 +66,32 @@ def admin():
     listar_usuarios = usuario_repository.listar_todos_usuarios()
     return render_template('admin.html', usuario = usuario, usuarios = listar_usuarios)
 
-@app.route('/panel')
+@app.route('/painel')
 @login_required
 def painel():
-    usuario = usuario_repository.buscar_usuario_por_email(session['usuario.id'])
+    usuario = usuario_repository.buscar_usuario_por_email(session['id_usuario'])
     return render_template('painel.html', usuario = usuario)
 
-@app.route('/seguranca_cibernetica')
+@app.route('/seguranca')
 @login_required
-def seguranca_cibernetica():
+def seguranca():
     listar_seguranca_cibernetica = seguranca_repository.listar_seguranca_cibernetica()
     return render_template('seguranca.html', seguranca_cibernetica = listar_seguranca_cibernetica)
 
+@app.route('/editar_usuario/<int:id_usuario>', methods = ['GET', 'POST'])
+@login_required
+def  editar_usuario(id_usuario):
+    usuario = usuario_repository.buscar_usuario_por_id(id_usuario)
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        senha = request.form['senha']
+        usuario_repository.actualizar_usuario(id_usuario, nome, email, senha)
+    return render_template('editar_usuario.html', usuario = usuario)
+
 @app.route('/seguranca_cibernetica/<int:id_seguranca>', methods = ['GET', 'POST'])
 @login_required
-def seguranca_cibernetica(id_seguranca):
+def cibernetica(id_seguranca):
     seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca)
     if request.method == 'POST':
         senha_forte = request.form['senha_forte']
@@ -97,6 +109,12 @@ def deletar_seguranca_cibernetica(id_seguranca):
         seguranca_repository.deletar_seguranca_cibernetica(id_seguranca)
         return redirect(url_for('seguranca_cibernetica'))
     return redirect(url_for('seguranca_cibernetica'))
+
+@app.route('/excluir_usuario/<int:id_usuario>')
+@login_required
+def excluir_usuario(id_usuario):
+    usuario_repository.deletar_usuario(id_usuario)
+    return redirect(url_for('admin'))
 
 @app.route('/bitacora/<int:id_bitacora>', methods = ['GET', 'POST'])
 @login_required

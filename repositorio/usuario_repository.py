@@ -52,10 +52,39 @@ def salvar_usuario(self, nome, email, senha):
     self.db.commit()
     return cursor.lastrowid
 
-def listar_todos_usuarios(self):
-    cursor = self.db.cursor(dictionary = True)
+def listar_todos_usuarios():
+    conexao = connector()
+    cursor = conexao.cursor(dictionary = True)
     cursor.execute("SELECT * FROM usuario")
-    return cursor.fetchall()
+    resultado = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return resultado
+
+def atualizar_usuario(id_usuario, nome, email, senha):
+    conexao = connector()
+    cursor = conexao.cursor()
+    if senha:
+        cursor.execute(
+            "UPDATE usuario SET nome = %s, email = %s, senha = %s WHERE id = %s",
+            (nome, email, senha, id_usuario),
+        )
+    else:
+        cursor.execute(
+            "UPDATE usuario SET nome = %s, email = %s WHERE id = %s",
+            (nome, email, id_usuario),
+        )
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+
+def deletar_usuario(id_usuario):
+    conexao = connector()
+    cursor = conexao.cursor()
+    cursor.execute("DELETE FROM usuario WHERE id = %s", (id_usuario,))
+    conexao.commit()
+    cursor.close()
+    conexao.close()
 
 def buscar_usuario_por_id(id_usuario):
     conexao = connector()

@@ -2,17 +2,17 @@
 
 {% block title%}Painel de Administração{%endblock%}
 
-{% block conten %}
+{% block content %}
 
     <h1>Bem-vindo ao Painel de Administração</h1>
 
     {% if usuario%}
-        <p>Oi, {{Usuario.Emeli Andreina}} (Admin)</p>
+        <p>Oi, {{usuario.nome}} (Admin)</p>
     {%endif%}
 
     <nav>
         <ul>
-            <li><a href="{{url_for('panel')}}">Ir para o meu Painel</a></li>
+            <li><a href="{{url_for('painel')}}">Ir para o meu Painel</a></li>
             <li><a href="{{url_for('logout')}}">Sair (Logout)</a></li>
         </ul>
     </nav>
@@ -34,8 +34,8 @@
                     <td style="padding: 8px;">{{u.nome}}</td>
                     <td style="padding: 8px;">{{u.email}}</td>
                     <td style="padding: 8px;">
-                        <a href="{{url_for('editar_usuario', email=u.email)}}">Editar</a>
-                        <a href="{{url_for('excluir_usuario', email=u.email)}}"onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
+                        <a href="{{url_for('editar_usuario', id_usuario = u.id)}}">Editar</a>
+                        <a href="{{url_for('excluir_usuario', id_usuario = u.id)}}"onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
                     </td>
                 </tr>
                 {%else%}
