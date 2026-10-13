@@ -1,5 +1,3 @@
-from asyncio import open_connection
-
 from database.db import connector
 from models.vulnerabilidade import Vulnerabilidade
 
@@ -76,15 +74,18 @@ def buscar_vulnerabilidade_por_id(id_vulnerabilidade):
     return Vulnerabilidade(id, nome, descricao, impacto)
 
 def atualizar_vulnerabilidade(vulnerabilidade):
-    conexion = open_connection()
-    cursor = conexion.cursor()
+    conexao = connector()
+    cursor = conexao.cursor()
+
     query = "UPDATE vulnerabilidade SET nome = %s, descricao = %s, impacto = %s WHERE id = %s"
-    cursor.execute(query(
+
+    cursor.execute(query, (
         vulnerabilidade.nome,
         vulnerabilidade.descricao,
         vulnerabilidade.impacto,
         vulnerabilidade.id
     ))
-    conexion.commit()
+
+    conexao.commit()
     cursor.close()
-    conexion.close()
+    conexao.close()

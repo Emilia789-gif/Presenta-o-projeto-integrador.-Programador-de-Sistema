@@ -1,5 +1,3 @@
-from asyncio import open_connection
-
 from database.db import connector
 from models.bitacora import Bitacora
 
@@ -49,22 +47,22 @@ def buscar_bitacora_por_data(data):
     conexao.close()
     return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
-def actualizar_bitacora(self, bitacora):
-    conexion = open_connection()
-    cursor = conexion.cursor()
+def atualizar_bitacora(bitacora):
+    conexao = connector()
+    cursor = conexao.cursor()
 
     query = "UPDATE bitacora SET usuario = %s, acao = %s, data = %s WHERE id = %s"
 
-    cursor.execute(query,(
+    cursor.execute(query, (
         bitacora.usuario,
         bitacora.acao,
         bitacora.data,
         bitacora.id
     ))
 
-    conexion.commit()
+    conexao.commit()
     cursor.close()
-    conexion.close()
+    conexao.close()
 
 def buscar_bitacora_por_id(id_bitacora):
     conexao = connector()

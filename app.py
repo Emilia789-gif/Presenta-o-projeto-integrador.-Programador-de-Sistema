@@ -1,5 +1,4 @@
 from functools import wraps
-from typing import Self
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.usuario import Usuario
@@ -69,10 +68,12 @@ def admin():
 @app.route('/painel')
 @login_required
 def painel():
+    print("SESSION:", dict(session))
     usuario = usuario_repository.buscar_usuario_por_email(session['id_usuario'])
+    print("USUARIO:", usuario)
     return render_template('painel.html', usuario = usuario)
 
-@app.route('/seguranca')
+@app.route('/seguranca', methods = ['GET', 'POST'])
 @login_required
 def seguranca():
     listar_seguranca_cibernetica = seguranca_repository.listar_seguranca_cibernetica()
@@ -86,7 +87,8 @@ def  editar_usuario(id_usuario):
         nome = request.form['nome']
         email = request.form['email']
         senha = request.form['senha']
-        usuario_repository.actualizar_usuario(id_usuario, nome, email, senha)
+        usuario_repository.atualizar_usuario(id_usuario, nome, email, senha)
+        return redirect(url_for('painel'))
     return render_template('editar_usuario.html', usuario = usuario)
 
 @app.route('/seguranca_cibernetica/<int:id_seguranca>', methods = ['GET', 'POST'])
@@ -156,7 +158,7 @@ def defesa_guardiao_da_red(id_seguranca_cibernetica):
     seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca_cibernetica)
     
     if seguranca is None:
-        return redirect(url_for('seguranca_cibernetica'))
+        return redirect(url_for('admin'))
     
     if request.method == 'POST':
         seguranca.localizacao = request.form.get('localizacao')
@@ -171,7 +173,7 @@ def defesa_guardiao_da_red(id_seguranca_cibernetica):
     
         seguranca_repository.atualizar_seguranca_cibernetica(seguranca)
         
-        return redirect(url_for('seguranca_cibernetica'))
+        return redirect(url_for('seguranca'))
 
     return render_template('defesa_guardiao_da_red.html', seguranca=seguranca)
 

@@ -1,17 +1,17 @@
-{%extends "base.html"%}
+s{%extends "base.html"%}
 
 {%block title%}Segurança Cibernética{%endblock%}
 
 {%block content%}
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="color: #2c3e50; margin: 0;">Segurança Cibernética</h2>
-        <a href="{{url_for('cadastrar_seguranca')}}"
+        <a href="{{url_for('cadastro')}}"
         style="padding: 10px 15px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
          + Novo Registro
         </a>
     </div>
 
-    {%if segunranca_cibernetica%}
+    {%if seguranca_cibernetica %}
     <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background-color: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
         <thead>
             <tr style="background-color: #2c3e50; color: white;">
@@ -23,7 +23,7 @@
         </thead>
     </table>
     <tbody>
-        {%for s in seguranca_cibernetica%}
+        {%for s in seguranca_cibernetica %}
         <tr style="border-bottom: 1px solid #ddd;">
             <td style="padding: 10px;">{{s.id}}</td>
             <td style="padding: 10px;">{{s.senha_forte}}</td>
@@ -34,8 +34,12 @@
                 Editar
                 </a>
 
-                <form method="POST"
-                action="{{url_for('deletar_seguranca_cibernetica' id_seguranca = s.id)}}"
+                <a href="{{ url_for('defesa_guardiao_da_red', id_seguranca_cibernetica=s.id) }}"
+   style="color: #27ae60; text-decoration: none; margin-right: 10px; font-weight: bold;">
+   Defesa
+    </a>
+
+                <form action="{{url_for('deletar_seguranca_cibernetica', id_seguranca=s.id)}}"method="POST">
                 style="display: inline;">
                 <button type="submit"
                     onclick="return confirm('Tem certeza que deseja excluir este registro ?');"
@@ -51,7 +55,7 @@
      {%else%}
         <div style="text-align: center; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
             <p style="color: #7f8c8d; font-size: 1.1em;">Nenhum registro de segurança cibernética cadastrado.</p>
-            <a href="{{url_for('cadastrar_seguranca')}}" style="color: #27ae60; font-weight: bold;">Cadastrar o primeiro registrado</a>
+            <a href="{{url_for('cadastro')}}" style="color: #27ae60; font-weight: bold;">Cadastrar o primeiro registrado</a>
         </div>
     {%endif%}
     {%endblock%}

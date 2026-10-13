@@ -1,5 +1,3 @@
-from asyncio import open_connection
-
 from database.db import connector
 from models.seguranca_cibernetica import Seguranca_Cibernetica
 
@@ -14,7 +12,7 @@ def tabela_seguranca_cibernetica():
 def criar_seguranca_cibernetica(seguranca_cibernetica):
     conexao = connector()
     cursor = conexao.cursor()
-    cursor.execute("CREATE INTO seguranca_cibernetica (senha_forte, autenticacao) VALUES (%s, %s)", (seguranca_cibernetica.senha_forte, seguranca_cibernetica.autenticacao))
+    cursor.execute("INSERT INTO seguranca_cibernetica (senha_forte, autenticacao) VALUES (%s, %s)", (seguranca_cibernetica.senha_forte, seguranca_cibernetica.autenticacao))
     conexao.commit()
     id_seguranca_cibernetica = cursor.lastrowid
     cursor.close()
@@ -23,8 +21,8 @@ def criar_seguranca_cibernetica(seguranca_cibernetica):
     return Seguranca_Cibernetica
 
 def listar_seguranca_cibernetica():
-    conexao = open_connection()
-    cursor = conexao.cursor()
+    conexao = connector()
+    cursor = conexao.cursor(dictionary=True)
     cursor.execute("SELECT * FROM seguranca_cibernetica")
     resultados = cursor.fetchall()
     cursor.close()
@@ -50,7 +48,7 @@ def atualizar_seguranca_cibernetica(seguranca_cibernetica):
     return Seguranca_Cibernetica
 
 def deletar_seguranca_cibernetica(id_seguranca):
-    conexao = connector
+    conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("DELETE FROM seguranca_cibernetica WHERE id = %s", (id_seguranca,))
     conexao.commit()

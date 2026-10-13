@@ -2,8 +2,8 @@ from models.bitacora import Bitacora
 from models.defensa_guardiao_da_red.rastreador import Alerta_automatica
 
 class Seguranca_Cibernetica:
-    segurança_cibernetica = []
-    def __int__(self, bitacora, olho_do_sistema, radar_de_acesso, alerta_de_riesgo, porta_dos_fundos, vulnerabilidade):
+    seguranca_cibernetica = []
+    def __init__(self, bitacora, olho_do_sistema, radar_de_acesso, alerta_de_riesgo, porta_dos_fundos, vulnerabilidade):
         self.bitacora = bitacora
         self.olho_do_sistema = olho_do_sistema
         self.radar_de_acesso = radar_de_acesso
@@ -13,13 +13,13 @@ class Seguranca_Cibernetica:
         self._status = False
         self._bitacora = []
         self._vulnerabilidade = []
-        Seguranca_Cibernetica.segurança_cibernetica.append(self)
+        Seguranca_Cibernetica.seguranca_cibernetica.append(self)
 
     def __str__(self):
         return f"Bitacora: {self.bitacora} \n |Defensa_do_diário_de_borde: {self.olho_do_sistema} \n |Guardião_da_red: {self.radar_de_acesso} \n |Falhas_de_vulnerabilidade: {self.alerta_de_riesgo} \n |Guardião_da_red: {self.porta_dos_fundos} \n |Vulnerabilidade: {str(self.vulnerabilidade)} \n |Status: {self.ativo}"
     @classmethod
     def listar_cibernetica(cls):
-        for cibernetica in cls.segurança_cibernetica:
+        for cibernetica in cls.seguranca_cibernetica:
             print(f"Bitacora: {cibernetica.bitacora} \n |Defensa_do_diário_de_borde: {cibernetica.olho_do_sistema} \n |Guardião_da_red:{cibernetica.radar_de_acesso} \n |Falhas_de_vulnerabilidade: {cibernetica.alerta_de_riesgo} \n |Guardião_da_red: {cibernetica.porta_dos_fundos} \n |Vulnerabiliade: {str(cibernetica.vulnerabilidade)} \n |Status: {cibernetica.ativo} \n |Bitacora: {cibernetica.media_bitacora}")
     @property
     def ativo(self):

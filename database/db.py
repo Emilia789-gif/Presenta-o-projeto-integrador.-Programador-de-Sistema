@@ -1,5 +1,3 @@
-from asyncio import open_connection
-
 import mysql.connector
 
 def connector():
@@ -11,13 +9,22 @@ def connector():
     )
     return conexao
 
-def tabela_segurança_cibernetica():
+def tabela_seguranca_cibernetica():
     conexao = connector()
     cursor = conexao.cursor()
-    criar_tabela_segurança_cibernetica = "CREATE TABLE IF NOT EXISTS segurança_cibernetica(id INT AUTO_INCREMENT PRIMARY KEY, senha_forte VARCHAR(100) NOT NULL, autenticaçao VARCHAR(100) NOT NULL, ativo BOOLEAN DEFAULT FALSE NOT NULL)"
-    cursor.execute(criar_tabela_segurança_cibernetica)
+    criar_tabela_seguranca_cibernetica = "CREATE TABLE IF NOT EXISTS segurança_cibernetica(id INT AUTO_INCREMENT PRIMARY KEY, senha_forte VARCHAR(100) NOT NULL, autenticaçao VARCHAR(100) NOT NULL, ativo BOOLEAN DEFAULT FALSE NOT NULL)"
+    cursor.execute(criar_tabela_seguranca_cibernetica)
     conexao.commit()
     conexao.close()
+
+def listar_seguranca_cibernetica():
+    conexao = connector()
+    cursor = conexao.cursor()
+    cursor.execute("SELECT * FROM segurança_cibernetica")
+    resultados = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return resultados
 
 def tabela_bitacora():
     conexao = connector()
