@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Vulnerabilidade{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="color: #2c3e50; margin: 0;">Vulnerabilidades</h2>
+</div>
+
+{% if vulnerabilidades %}
+<table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <thead>
+        <tr style="background-color: #2c3e50; color: white;">
+            <th style="padding: 10px;">ID</th>
+            <th style="padding: 10px;">Nome</th>
+            <th style="padding: 10px;">Descrição</th>
+            <th style="padding: 10px;">Impacto</th>
+            <th style="padding: 10px; text-align: center;">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in vulnerabilidades %}
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;">{{ v.id }}</td>
+            <td style="padding: 10px;">{{ v.nome }}</td>
+            <td style="padding: 10px;">{{ v.descricao }}</td>
+            <td style="padding: 10px;">{{ v.impacto }}</td>
+            <td style="padding: 10px; text-align: center;">
+                <!-- Enlace para editar el registro específico -->
+                <a href="{{ url_for('vulnerabilidade', id_vulnerabilidade=v.id) }}" style="color: #2980b9; text-decoration: none; font-weight: bold;">
+                    Editar
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="text-align: center; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p style="color: #7f8c8d;">Nenhuma vulnerabilidade cadastrada.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Bitácora{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="color: #2c3e50; margin: 0;">Bitácora</h2>
+</div>
+
+{% if bitacoras %}
+<table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <thead>
+        <tr style="background-color: #2c3e50; color: white;">
+            <th style="padding: 10px;">ID</th>
+            <th style="padding: 10px;">Usuário</th>
+            <th style="padding: 10px;">Ação</th>
+            <th style="padding: 10px;">Data</th>
+            <th style="padding: 10px; text-align: center;">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b in bitacoras %}
+        <tr style="border-bottom: 1px solid #ddd;">
+            <!-- Usamos b[0], b[1]... porque los datos vienen como lista desde la BD -->
+            <td style="padding: 10px;">{{ b[0] }}</td>
+            <td style="padding: 10px;">{{ b[1] }}</td>
+            <td style="padding: 10px;">{{ b[2] }}</td>
+            <td style="padding: 10px;">{{ b[3] }}</td>
+            <td style="padding: 10px; text-align: center;">
+                <!-- Le pasamos el ID (b[0]) a la función de editar -->
+                <a href="{{ url_for('editar_bitacora', id_bitacora=b[0]) }}" style="color: #2980b9; text-decoration: none; font-weight: bold;">
+                    Editar
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="text-align: center; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p style="color: #7f8c8d;">Nenhum registro de bitácora cadastrado.</p>
+</div>
+{% endif %}
+{% endblock %}

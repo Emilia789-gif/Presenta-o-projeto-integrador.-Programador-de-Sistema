@@ -73,6 +73,20 @@ def buscar_vulnerabilidade_por_id(id_vulnerabilidade):
     id, nome, descricao, impacto = vulnerabilidade
     return Vulnerabilidade(id, nome, descricao, impacto)
 
+def listar_vulnerabilidades():
+    conexao = connector()
+    cursor = conexao.cursor()
+    
+    # Asegúrate de que los campos (id, nome, descricao, impacto) coincidan con tu tabla
+    cursor.execute("SELECT id, nome, descricao, impacto FROM vulnerabilidade")
+    resultados = cursor.fetchall()
+    
+    cursor.close()
+    conexao.close()
+    
+    # ⚠️ IMPORTANTE: Si tu clase Vulnerabilidade pide el ID, agrégalo como en Bitacora
+    return [Vulnerabilidade(nome, descricao, impacto) for (id, nome, descricao, impacto) in resultados]
+
 def atualizar_vulnerabilidade(vulnerabilidade):
     conexao = connector()
     cursor = conexao.cursor()

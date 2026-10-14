@@ -20,7 +20,7 @@ def criar_seguranca_cibernetica(seguranca_cibernetica):
     seguranca_cibernetica.id = id_seguranca_cibernetica
     return Seguranca_Cibernetica
 
-def listar_seguranca_cibernetica():
+def listar_seguranca():
     conexao = connector()
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("SELECT * FROM seguranca_cibernetica")
@@ -38,7 +38,7 @@ def buscar_seguranca_cibernetica_por_id(id_seguranca):
     conexao.close()
     return resultado
 
-def atualizar_seguranca_cibernetica(seguranca_cibernetica):
+def atualizar_seguranca(seguranca_cibernetica):
     conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("UPDATE seguranca_cibernetica SET senha_forte = %s, autenticacao = %s WHERE id = %s", (seguranca_cibernetica.senha_forte, seguranca_cibernetica.autenticacao, seguranca_cibernetica.id))
@@ -47,7 +47,7 @@ def atualizar_seguranca_cibernetica(seguranca_cibernetica):
     conexao.close()
     return Seguranca_Cibernetica
 
-def deletar_seguranca_cibernetica(id_seguranca):
+def deletar_seguranca(id_seguranca):
     conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("DELETE FROM seguranca_cibernetica WHERE id = %s", (id_seguranca,))

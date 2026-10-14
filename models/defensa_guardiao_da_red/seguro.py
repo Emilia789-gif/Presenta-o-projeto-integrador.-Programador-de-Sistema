@@ -5,4 +5,4 @@ class Seguro(Alerta_automatica):
         super().__init__(localizacao, monitoreo_de_patrones_de_inyeccao)
         self.alerta_de_tempo_real = alerta_de_tempo_real
     def __str__(self):
-        return self._localiçao
+        return self._localicao

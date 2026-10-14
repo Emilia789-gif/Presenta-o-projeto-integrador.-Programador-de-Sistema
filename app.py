@@ -76,8 +76,8 @@ def painel():
 @app.route('/seguranca', methods = ['GET', 'POST'])
 @login_required
 def seguranca():
-    listar_seguranca_cibernetica = seguranca_repository.listar_seguranca_cibernetica()
-    return render_template('seguranca.html', seguranca_cibernetica = listar_seguranca_cibernetica)
+    listar_seguranca = seguranca_repository.listar_seguranca()
+    return render_template('seguranca.html', seguranca_cibernetica = listar_seguranca)
 
 @app.route('/editar_usuario/<int:id_usuario>', methods = ['GET', 'POST'])
 @login_required
@@ -100,17 +100,17 @@ def cibernetica(id_seguranca):
         autenticacao = request.form['autenticacao']
         seguranca.senha_forte = senha_forte
         seguranca.autenticacao = autenticacao
-        seguranca_repository.atualizar_seguranca_cibernetica(seguranca)
+        seguranca_repository.atualizar_seguranca(seguranca)
         return redirect(url_for('seguranca_cibernetica'))
     return render_template('editar_seguranca.html', seguranca = seguranca)
 
-@app.route('/seguranca_cibernetica/deletar/<int:id_seguramca>', methods = ['GET', 'POST'])
+@app.route('/seguranca/deletar/<int:id_seguramca>', methods = ['GET', 'POST'])
 @login_required
-def deletar_seguranca_cibernetica(id_seguranca):
+def deletar_seguranca(id_seguranca):
     if request.method == 'POST':
-        seguranca_repository.deletar_seguranca_cibernetica(id_seguranca)
+        seguranca_repository.deletar_seguranca(id_seguranca)
         return redirect(url_for('seguranca_cibernetica'))
-    return redirect(url_for('seguranca_cibernetica'))
+    return render_template('seguranca_cibernetica')
 
 @app.route('/excluir_usuario/<int:id_usuario>')
 @login_required
@@ -118,48 +118,76 @@ def excluir_usuario(id_usuario):
     usuario_repository.deletar_usuario(id_usuario)
     return redirect(url_for('admin'))
 
-@app.route('/bitacora/<int:id_bitacora>', methods = ['GET', 'POST'])
+# --- 1. RUTA PARA LISTAR (No lleva ID) ---
+@app.route('/bitacora')
+@login_required
+def bitacora():
+    # Llama al repositorio sin pasarle argumentos
+    lista_bitacoras = bitacora_repository.listar_bitacoras()
+    return render_template('bitacora.html', bitacoras=lista_bitacoras)
+
+# --- 2. RUTA PARA EDITAR (Sí lleva ID en la URL) ---
+@app.route('/bitacora/<int:id_bitacora>', methods=['GET', 'POST'])
 @login_required
 def editar_bitacora(id_bitacora):
+    # Busca el registro específico
     bitacora = bitacora_repository.buscar_bitacora_por_id(id_bitacora)
+    
     if request.method == 'POST':
         usuario = request.form['usuario']
         acao = request.form['acao']
         data = request.form['data']
-        bitacora.usuario = usuario
-        bitacora.acao = acao
-        bitacora.data = data
-        bitacora = Bitacora(usuario,acao, data)
-        bitacora_repository.actualizar_bitacora(bitacora)
+        
+        # Actualiza usando el ID directamente
+        bitacora_repository.actualizar_bitacora(id_bitacora, usuario, acao, data)
+        
+        # Redirige a la lista general
         return redirect(url_for('bitacora'))
-    return render_template('editar_bitacora.html', bitacora = bitacora)
+        
+    # Si es GET, muestra el formulario con los datos
+    return render_template('editar_bitacora.html', bitacora=bitacora)
 
-
-@app.route('/vulnerabilidade/<int:id_vulnerabilidade>', methods = ['GET', 'POST'])
+# --- 1. FUNCIÓN PARA LISTAR (Esta NO lleva ID) ---
+@app.route('/vulnerabilidade')
 @login_required
-def editar_vulnerabilidad(id_vulnerabilidade):
+def vulnerabilidade():
+    lista_vulnerabilidades = vulnerabilidade_repository.listar_vulnerabilidades()
+    return render_template('vulnerabilidade.html', vulnerabilidades=lista_vulnerabilidades)
+
+# --- 2. FUNCIÓN PARA EDITAR (Esta SÍ lleva ID) ---
+@app.route('/vulnerabilidade/<int:id_vulnerabilidade>', methods=['GET', 'POST'])
+@login_required
+def editar_vulnerabilidade(id_vulnerabilidade):
     vulnerabilidade = vulnerabilidade_repository.buscar_vulnerabilidade_por_id(id_vulnerabilidade)
+    
     if request.method == 'POST':
         nome = request.form['nome']
-        descricao = request.form ['descricao']
+        descricao = request.form['descricao']
         impacto = request.form['impacto']
+        
         vulnerabilidade.nome = nome
         vulnerabilidade.descricao = descricao
         vulnerabilidade.impacto = impacto
-        vulnerabilidade = Vulnerabilidade(nome, descricao, impacto)
-        vulnerabilidade_repository.atualizar_vulnerabilidade(vulnerabilidade)
+        
+        vulnerabilidade_repository.actualizar_vulnerabilidade(vulnerabilidade)
         return redirect(url_for('vulnerabilidade'))
-    return render_template('editar_vulnerabilidade.html', vulnerabilidade = vulnerabilidade)
+        
+    return render_template('editar_vulnerabilidade.html', vulnerabilidade=vulnerabilidade)
 
-@app.route('/seguranca_cibernetica/<int:id_seguranca_cibernetica>/defesa_guardiao_da_red', methods=['GET', 'POST'])
+@app.route('/defensa_guardiao_da_red/', defaults={'id_seguranca_cibernetica': None})
+@app.route('/defensa_guardiao_da_red/<int:id_seguranca_cibernetica>', methods=['GET', 'POST'])
 @login_required
-def defesa_guardiao_da_red(id_seguranca_cibernetica):
+def defensa_guardiao_da_red(id_seguranca_cibernetica):
+    
+    # Si no se pasa un ID, mostramos la página vacía
+    if id_seguranca_cibernetica is None:
+        return render_template('defensa_guardiao_da_red.html', seguranca=None)
 
     seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca_cibernetica)
     
     if seguranca is None:
         return redirect(url_for('admin'))
-    
+
     if request.method == 'POST':
         seguranca.localizacao = request.form.get('localizacao')
         seguranca.monitoreo_de_patrones_de_inyeccao = request.form.get('monitoreo_de_patrones_de_inyeccao')
@@ -170,12 +198,13 @@ def defesa_guardiao_da_red(id_seguranca_cibernetica):
         seguranca.ponto_cego = request.form.get('ponto_cego')
         seguranca.rastreador = request.form.get('rastreador')
         seguranca.seguro = request.form.get('seguro')
-    
+        
         seguranca_repository.atualizar_seguranca_cibernetica(seguranca)
         
         return redirect(url_for('seguranca'))
 
-    return render_template('defesa_guardiao_da_red.html', seguranca=seguranca)
+    return render_template('defensa_guardiao_da_red.html', seguranca=seguranca)
+
 
 if __name__ == '__main__':
     bitacora_repository.tabela_bitacora()

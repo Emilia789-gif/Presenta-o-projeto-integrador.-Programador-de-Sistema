@@ -27,7 +27,7 @@ def buscar_bitacora_por_usuario(usuario):
     resultados = cursor.fetchall()
     cursor.close()
     conexao.close()
-    return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
+    return [Bitacora(id, usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
 def buscar_bitacora_por_acao(acao):
     conexao = connector()
@@ -36,7 +36,7 @@ def buscar_bitacora_por_acao(acao):
     resultados = cursor.fetchall()
     cursor.close()
     conexao.close()
-    return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
+    return [Bitacora(id, usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
 def buscar_bitacora_por_data(data):
     conexao = connector()
@@ -45,30 +45,36 @@ def buscar_bitacora_por_data(data):
     resultados = cursor.fetchall()
     cursor.close()
     conexao.close()
-    return [Bitacora(usuario, acao, data) for (id, usuario, acao, data) in resultados]
+    return [Bitacora(id, usuario, acao, data) for (id, usuario, acao, data) in resultados]
 
-def atualizar_bitacora(bitacora):
+def listar_bitacoras():
     conexao = connector()
     cursor = conexao.cursor()
-
-    query = "UPDATE bitacora SET usuario = %s, acao = %s, data = %s WHERE id = %s"
-
-    cursor.execute(query, (
-        bitacora.usuario,
-        bitacora.acao,
-        bitacora.data,
-        bitacora.id
-    ))
-
-    conexao.commit()
+    
+    cursor.execute("SELECT id, usuario, acao, data FROM bitacora")
+    resultados = cursor.fetchall()
+    
     cursor.close()
     conexao.close()
+    
+    # Retornamos directamente los resultados (lista de tuplas).
+    # ¡NO los conviertas a objetos Bitacora aquí!
+    return resultados
 
 def buscar_bitacora_por_id(id_bitacora):
     conexao = connector()
     cursor = conexao.cursor()
     cursor.execute("SELECT id, usuario, acao, data FROM bitacora WHERE id = %s", (id_bitacora,))
-    resultado = cursor.fetchone()
+    linha = cursor.fetchone()
     cursor.close()
     conexao.close()
-    return resultado
+    return linha # También devuelve una lista/tupla
+
+def actualizar_bitacora(id_bitacora, usuario, acao, data):
+    conexao = connector()
+    cursor = conexao.cursor()
+    query = "UPDATE bitacora SET usuario = %s, acao = %s, data = %s WHERE id = %s"
+    cursor.execute(query, (usuario, acao, data, id_bitacora))
+    conexao.commit()
+    cursor.close()
+    conexao.close()

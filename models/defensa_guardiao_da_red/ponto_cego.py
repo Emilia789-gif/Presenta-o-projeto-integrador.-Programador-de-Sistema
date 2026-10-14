@@ -5,4 +5,4 @@ class Pontocego(Alerta_automatica):
         super().__init__(localizacao, monitoreo_de_patrones_de_inyeccao)
         self.shadow_IT = shadow_IT
     def __str__(self):
-        return self._localiçao
+        return self._localicao
