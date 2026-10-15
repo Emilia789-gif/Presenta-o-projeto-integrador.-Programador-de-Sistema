@@ -59,47 +59,39 @@ def buscar_vulnerabilidade_por_impacto(impacto):
     conexao.close()
     return [Vulnerabilidade(id, nome, descricao, impacto) for (id, nome, descricao, impacto) in vulnerabilidades]
 
-def buscar_vulnerabilidade_por_id(id_vulnerabilidade):
-    conexao = connector()
-    cursor = conexao.cursor()
-    cursor.execute(
-        "SELECT id, nome, descricao, impacto FROM vulnerabilidade WHERE id = %s", (id_vulnerabilidade,)
-    )
-    vulnerabilidade = cursor.fetchone()
-    cursor.close()
-    conexao.close()
-    if vulnerabilidade is None:
-        return None
-    id, nome, descricao, impacto = vulnerabilidade
-    return Vulnerabilidade(id, nome, descricao, impacto)
-
 def listar_vulnerabilidades():
     conexao = connector()
     cursor = conexao.cursor()
-    
-    # Asegúrate de que los campos (id, nome, descricao, impacto) coincidan con tu tabla
+    # Asegúrate de que los nombres de las columnas coincidan con tu tabla
     cursor.execute("SELECT id, nome, descricao, impacto FROM vulnerabilidade")
     resultados = cursor.fetchall()
-    
     cursor.close()
     conexao.close()
-    
-    # ⚠️ IMPORTANTE: Si tu clase Vulnerabilidade pide el ID, agrégalo como en Bitacora
-    return [Vulnerabilidade(nome, descricao, impacto) for (id, nome, descricao, impacto) in resultados]
+    return resultados
 
-def atualizar_vulnerabilidade(vulnerabilidade):
+def buscar_vulnerabilidade_por_id(id_vulnerabilidade):
     conexao = connector()
     cursor = conexao.cursor()
+    cursor.execute("SELECT id, nome, descricao, impacto FROM vulnerabilidade WHERE id = %s", (id_vulnerabilidade,))
+    linha = cursor.fetchone()
+    cursor.close()
+    conexao.close()
+    return linha
 
+def actualizar_vulnerabilidade(id_vulnerabilidade, nome, descricao, impacto):
+    conexao = connector()
+    cursor = conexao.cursor()
     query = "UPDATE vulnerabilidade SET nome = %s, descricao = %s, impacto = %s WHERE id = %s"
+    cursor.execute(query, (nome, descricao, impacto, id_vulnerabilidade))
+    conexao.commit()
+    cursor.close()
+    conexao.close()
 
-    cursor.execute(query, (
-        vulnerabilidade.nome,
-        vulnerabilidade.descricao,
-        vulnerabilidade.impacto,
-        vulnerabilidade.id
-    ))
-
+def inserir_vulnerabilidade(nome, descricao, impacto):
+    conexao = connector()
+    cursor = conexao.cursor()
+    query = "INSERT INTO vulnerabilidade (nome, descricao, impacto) VALUES (%s, %s, %s)"
+    cursor.execute(query, (nome, descricao, impacto))
     conexao.commit()
     cursor.close()
     conexao.close()

@@ -78,3 +78,14 @@ def actualizar_bitacora(id_bitacora, usuario, acao, data):
     conexao.commit()
     cursor.close()
     conexao.close()
+
+def inserir_bitacora(usuario, acao, data):
+    conexao = connector()
+    cursor = conexao.cursor()
+    
+    query = "INSERT INTO bitacora (usuario, acao, data) VALUES (%s, %s, %s)"
+    cursor.execute(query, (usuario, acao, data))
+    
+    conexao.commit()
+    cursor.close()
+    conexao.close()

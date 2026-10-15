@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Entrada na Bitácora{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="color: #2c3e50; text-align: center;">Nova Entrada na Bitácora</h2>
+    
+    <form method="POST">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold;">Usuário:</label>
+            <input type="text" name="usuario" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold;">Ação:</label>
+            <input type="text" name="acao" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold;">Data:</label>
+            <!-- Usamos type="date" para que aparezca el calendario nativo del navegador -->
+            <input type="date" name="data" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            Salvar Registro
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="{{ url_for('bitacora') }}" style="color: #7f8c8d; text-decoration: none;">Voltar para a lista</a>
+    </div>
+</div>
+{% endblock %}

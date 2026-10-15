@@ -20,38 +20,49 @@ def criar_seguranca_cibernetica(seguranca_cibernetica):
     seguranca_cibernetica.id = id_seguranca_cibernetica
     return Seguranca_Cibernetica
 
-def listar_seguranca():
+def listar_segurancas():
     conexao = connector()
-    cursor = conexao.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM seguranca_cibernetica")
+    cursor = conexao.cursor()
+    # CAMBIO: Usamos seguranca_cibernetica y agregamos la columna 'ativo'
+    cursor.execute("SELECT id, senha_forte, autenticacao, ativo FROM seguranca_cibernetica")
     resultados = cursor.fetchall()
     cursor.close()
     conexao.close()
     return resultados
 
-def buscar_seguranca_cibernetica_por_id(id_seguranca):
-    conexao = connector()
-    cursor = conexao.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM seguranca_cibernetica WHERE id = %s", (id_seguranca,))
-    resultado = cursor.fetchone()
-    cursor.close()
-    conexao.close()
-    return resultado
-
-def atualizar_seguranca(seguranca_cibernetica):
+def buscar_seguranca_cibernetica_por_id(id_seguranca_cibernetica):
     conexao = connector()
     cursor = conexao.cursor()
-    cursor.execute("UPDATE seguranca_cibernetica SET senha_forte = %s, autenticacao = %s WHERE id = %s", (seguranca_cibernetica.senha_forte, seguranca_cibernetica.autenticacao, seguranca_cibernetica.id))
+    cursor.execute("SELECT id, senha_forte, autenticacao, ativo FROM seguranca_cibernetica WHERE id = %s", (id_seguranca_cibernetica,))
+    linha = cursor.fetchone()
+    cursor.close()
+    conexao.close()
+    return linha
+
+def actualizar_seguranca(id_seguranca, senha_forte, autenticacao, ativo):
+    conexao = connector()
+    cursor = conexao.cursor()
+    query = "UPDATE seguranca_cibernetica SET senha_forte = %s, autenticacao = %s, ativo = %s WHERE id = %s"
+    cursor.execute(query, (senha_forte, autenticacao, ativo, id_seguranca))
     conexao.commit()
     cursor.close()
     conexao.close()
-    return Seguranca_Cibernetica
+
+def inserir_seguranca(senha_forte, autenticacao, ativo):
+    conexao = connector()
+    cursor = conexao.cursor()
+    # CAMBIO: Agregamos el campo 'ativo' al INSERT
+    query = "INSERT INTO seguranca_cibernetica (senha_forte, autenticacao, ativo) VALUES (%s, %s, %s)"
+    cursor.execute(query, (senha_forte, autenticacao, ativo))
+    conexao.commit()
+    cursor.close()
+    conexao.close()
 
 def deletar_seguranca(id_seguranca):
     conexao = connector()
     cursor = conexao.cursor()
+    # CAMBIO: Usamos la tabla correcta
     cursor.execute("DELETE FROM seguranca_cibernetica WHERE id = %s", (id_seguranca,))
     conexao.commit()
     cursor.close()
     conexao.close()
-    return True

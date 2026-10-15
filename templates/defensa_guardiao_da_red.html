@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Defensa e Guardião da Red{% endblock %}
+{% block title %}Defesa e Guardião da Rede{% endblock %}
 
 {% block content %}
 
 <!-- MENÚ DE CONEXIÓN A OTROS MÓDULOS -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background-color: #2c3e50; padding: 15px; border-radius: 8px;">
-    <h2 style="color: white; margin: 0; font-size: 1.2em;">Defensa e Guardião da Red</h2>
+    <h2 style="color: white; margin: 0; font-size: 1.2em;">Defesa e Guardião da Rede</h2>
     <div style="display: flex; gap: 10px;">
-        
-        <!-- ⚠️ IMPORTANTE: Estos nombres deben ser los de tus funciones de LISTA en app.py. NO uses 'editar_...' -->
         <a href="{{ url_for('bitacora') }}" style="padding: 8px 12px; background-color: #2980b9; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 0.9em;">
             Bitácora
         </a>
@@ -22,53 +20,29 @@
     </div>
 </div>
 
-<!-- AQUÍ ESTÁ LA CLAVE: Verificamos si 'seguranca' tiene datos -->
 {% if seguranca %}
-    <form method="POST" action="{{ url_for('defensa_guardiao_da_red', id_seguranca_cibernetica=seguranca.id) }}" style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <!-- El formulario apunta al ID del registro actual (seguranca[0]) -->
+    <form method="POST" action="{{ url_for('defensa_guardiao_da_red', id_seguranca_cibernetica=seguranca[0]) }}" style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
         
         <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Localização:</label>
-            <input type="text" name="localizacao" value="{{ seguranca.localizacao or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <label style="display: block; font-weight: bold; color: #333;">Senha Forte:</label>
+            <!-- seguranca[1] es el campo 'senha_forte' -->
+            <input type="text" name="senha_forte" value="{{ seguranca[1] or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
 
         <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Monitoramento de Padrões de Injeção:</label>
-            <input type="text" name="monitoreo_de_patrones_de_inyeccao" value="{{ seguranca.monitoreo_de_patrones_de_inyeccao or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Shadow IT:</label>
-            <input type="text" name="shadow_IT" value="{{ seguranca.shadow_IT or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Registro:</label>
-            <input type="text" name="registro" value="{{ seguranca.registro or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Alerta de Tempo Real:</label>
-            <input type="text" name="alerta_de_tempo_real" value="{{ seguranca.alerta_de_tempo_real or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Linha de Tempo:</label>
-            <input type="text" name="linha_de_tempo" value="{{ seguranca.linha_de_tempo or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Ponto Cego:</label>
-            <input type="text" name="ponto_cego" value="{{ seguranca.ponto_cego or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-weight: bold;">Rastreador:</label>
-            <input type="text" name="rastreador" value="{{ seguranca.rastreador or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <label style="display: block; font-weight: bold; color: #333;">Autenticação:</label>
+            <!-- seguranca[2] es el campo 'autenticacao' -->
+            <input type="text" name="autenticacao" value="{{ seguranca[2] or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
 
         <div style="margin-bottom: 20px;">
-            <label style="display: block; font-weight: bold;">Seguro:</label>
-            <input type="text" name="seguro" value="{{ seguranca.seguro or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <label style="display: block; font-weight: bold; color: #333;">Ativo:</label>
+            <!-- seguranca[3] es el campo 'ativo'. Usamos select para evitar errores de tipeo -->
+            <select name="ativo" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="Sim" {% if seguranca[3] == 1 or seguranca[3] == '1' %}selected{% endif %}>Sim</option>
+                <option value="Não" {% if seguranca[3] == 0 or seguranca[3] == '0' %}selected{% endif %}>Não</option>
+            </select>
         </div>
 
         <button type="submit" style="background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
@@ -76,6 +50,7 @@
         </button>
     </form>
 {% else %}
+    <!-- Mensaje si no se seleccionó ningún registro -->
     <div style="text-align: center; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
         <p style="color: #7f8c8d; font-size: 1.1em;">Nenhum registro de defesa selecionado. Por favor, selecione um registro na página anterior.</p>
     </div>

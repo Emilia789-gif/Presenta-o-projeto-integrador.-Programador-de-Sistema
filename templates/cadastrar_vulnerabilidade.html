@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Vulnerabilidade{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="color: #2c3e50; margin: 0;">Vulnerabilidades</h2>
+    <a href="{{ url_for('cadastrar_vulnerabilidade') }}" style="padding: 10px 15px; background-color: #c0392b; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+        + Novo Registro
+    </a>
+</div>
+    
+    <form method="POST">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold;">Nome:</label>
+            <input type="text" name="nome" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold;">Descrição:</label>
+            <input type="text" name="descricao" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold;">Impacto:</label>
+            <input type="text" name="impacto" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #c0392b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            Salvar Vulnerabilidade
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="{{ url_for('vulnerabilidade') }}" style="color: #7f8c8d; text-decoration: none;">Voltar para a lista</a>
+    </div>
+</div>
+{% endblock %}

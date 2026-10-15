@@ -3,10 +3,11 @@
 {% block title %}Segurança Cibernética{% endblock %}
 
 {% block content %}
+
+<!-- Cabecera con el botón de nuevo registro -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h2 style="color: #2c3e50; margin: 0;">Segurança Cibernética</h2>
-    <!-- Botón para crear un nuevo registro -->
-    <a href="{{ url_for('cadastro') }}" style="padding: 10px 15px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+    <a href="{{ url_for('cadastrar_seguranca') }}" style="padding: 10px 15px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
         + Novo Registro
     </a>
 </div>
@@ -18,44 +19,45 @@
             <th style="padding: 10px;">ID</th>
             <th style="padding: 10px;">Senha Forte</th>
             <th style="padding: 10px;">Autenticação</th>
+            <th style="padding: 10px;">Ativo</th>
             <th style="padding: 10px; text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for s in seguranca_cibernetica %}
         <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 10px;">{{ s.id }}</td>
-            <td style="padding: 10px;">{{ s.senha_forte }}</td>
-            <td style="padding: 10px;">{{ s.autenticacao }}</td>
+            <!-- Usamos s[0], s[1]... porque los datos vienen como lista desde la BD -->
+            <td style="padding: 10px; color: #333;">{{ s[0] }}</td> <!-- ID -->
+            <td style="padding: 10px; color: #333;">{{ s[1] }}</td> <!-- Senha Forte -->
+            <td style="padding: 10px; color: #333;">{{ s[2] }}</td> <!-- Autenticação -->
+            <td style="padding: 10px; color: #333;">{{ s[3] }}</td> <!-- Ativo -->
+            
             <td style="padding: 10px; text-align: center;">
-                
-                <!-- Botón Editar -->
-                <a href="{{ url_for('editar_seguranca_cibernetica', id_seguranca=s.id) }}" style="color: #2980b9; text-decoration: none; margin-right: 10px; font-weight: bold;">
+                <!-- Botão Editar -->
+                <a href="{{ url_for('editar_seguranca', id_seguranca=s[0]) }}" style="color: #2980b9; text-decoration: none; font-weight: bold; margin-right: 10px;">
                     Editar
                 </a>
-
-                <!-- Botón Defesa (Corregido con id_seguranca_cibernetica) -->
-                <a href="{{ url_for('defensa_guardiao_da_red', id_seguranca_cibernetica=s.id) }}" style="color: #27ae60; text-decoration: none; margin-right: 10px; font-weight: bold;">
-                    Defesa
+                
+                <!-- Botão Defesa -->
+                <a href="{{ url_for('defensa_guardiao_da_red', id_seguranca_cibernetica=s[0]) }}" style="color: #27ae60; text-decoration: none; font-weight: bold; margin-right: 10px;">
+                    Defensa
                 </a>
 
-                <!-- Formulario Excluir (Corregido) -->
-                <form action="{{ url_for('deletar_seguranca_cibernetica', id_seguranca=s.id) }}" method="POST" style="display: inline;">
-                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este registro?');" style="background: none; border: none; color: #c0392b; font-weight: bold; cursor: pointer; padding: 0; font-size: 1em; font-family: inherit;">
-                        Excluir
-                    </button>
-                </form>
-                
+                <!-- Botão Excluir -->
+                <a href="{{ url_for('deletar_seguranca', id_seguranca=s[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este registro?');" style="color: #c0392b; text-decoration: none; font-weight: bold;">
+                    Excluir
+                </a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 {% else %}
+<!-- Mensaje cuando no hay registros -->
 <div style="text-align: center; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
     <p style="color: #7f8c8d; font-size: 1.1em;">Nenhum registro de segurança cibernética cadastrado.</p>
-    <!-- Botón que ahora conecta sin ID a la página de Defensa -->
-    <a href="{{ url_for('defensa_guardiao_da_red') }}" style="color: #27ae60; font-weight: bold;">Guardião dela Red Cibernética</a>
+    <a href="{{ url_for('cadastrar_seguranca') }}" style="color: #27ae60; font-weight: bold; text-decoration: none;">Cadastrar o primeiro registrado</a>
 </div>
 {% endif %}
+
 {% endblock %}

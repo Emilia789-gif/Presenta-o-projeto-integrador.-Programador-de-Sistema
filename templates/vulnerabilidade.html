@@ -3,8 +3,12 @@
 {% block title %}Vulnerabilidade{% endblock %}
 
 {% block content %}
+
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h2 style="color: #2c3e50; margin: 0;">Vulnerabilidades</h2>
+    <a href="{{ url_for('cadastrar_vulnerabilidade') }}" style="padding: 10px 15px; background-color: #c0392b; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+        + Novo Registro
+    </a>
 </div>
 
 {% if vulnerabilidades %}
@@ -21,13 +25,13 @@
     <tbody>
         {% for v in vulnerabilidades %}
         <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 10px;">{{ v.id }}</td>
-            <td style="padding: 10px;">{{ v.nome }}</td>
-            <td style="padding: 10px;">{{ v.descricao }}</td>
-            <td style="padding: 10px;">{{ v.impacto }}</td>
+            <!-- Agregado color: #333 para que las letras se vean sobre el fondo blanco -->
+            <td style="padding: 10px; color: #333;">{{ v[0] }}</td>
+            <td style="padding: 10px; color: #333;">{{ v[1] }}</td>
+            <td style="padding: 10px; color: #333;">{{ v[2] }}</td>
+            <td style="padding: 10px; color: #333;">{{ v[3] }}</td>
             <td style="padding: 10px; text-align: center;">
-                <!-- Enlace para editar el registro específico -->
-                <a href="{{ url_for('vulnerabilidade', id_vulnerabilidade=v.id) }}" style="color: #2980b9; text-decoration: none; font-weight: bold;">
+                <a href="{{ url_for('editar_vulnerabilidade', id_vulnerabilidade=v[0]) }}" style="color: #2980b9; text-decoration: none; font-weight: bold;">
                     Editar
                 </a>
             </td>
@@ -40,4 +44,5 @@
     <p style="color: #7f8c8d;">Nenhuma vulnerabilidade cadastrada.</p>
 </div>
 {% endif %}
+
 {% endblock %}

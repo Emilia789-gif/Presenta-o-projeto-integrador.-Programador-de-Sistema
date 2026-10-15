@@ -73,12 +73,6 @@ def painel():
     print("USUARIO:", usuario)
     return render_template('painel.html', usuario = usuario)
 
-@app.route('/seguranca', methods = ['GET', 'POST'])
-@login_required
-def seguranca():
-    listar_seguranca = seguranca_repository.listar_seguranca()
-    return render_template('seguranca.html', seguranca_cibernetica = listar_seguranca)
-
 @app.route('/editar_usuario/<int:id_usuario>', methods = ['GET', 'POST'])
 @login_required
 def  editar_usuario(id_usuario):
@@ -91,32 +85,62 @@ def  editar_usuario(id_usuario):
         return redirect(url_for('painel'))
     return render_template('editar_usuario.html', usuario = usuario)
 
-@app.route('/seguranca_cibernetica/<int:id_seguranca>', methods = ['GET', 'POST'])
-@login_required
-def cibernetica(id_seguranca):
-    seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca)
-    if request.method == 'POST':
-        senha_forte = request.form['senha_forte']
-        autenticacao = request.form['autenticacao']
-        seguranca.senha_forte = senha_forte
-        seguranca.autenticacao = autenticacao
-        seguranca_repository.atualizar_seguranca(seguranca)
-        return redirect(url_for('seguranca_cibernetica'))
-    return render_template('editar_seguranca.html', seguranca = seguranca)
-
-@app.route('/seguranca/deletar/<int:id_seguramca>', methods = ['GET', 'POST'])
-@login_required
-def deletar_seguranca(id_seguranca):
-    if request.method == 'POST':
-        seguranca_repository.deletar_seguranca(id_seguranca)
-        return redirect(url_for('seguranca_cibernetica'))
-    return render_template('seguranca_cibernetica')
-
 @app.route('/excluir_usuario/<int:id_usuario>')
 @login_required
 def excluir_usuario(id_usuario):
     usuario_repository.deletar_usuario(id_usuario)
     return redirect(url_for('admin'))
+
+# --- 1. RUTA PARA LISTAR (Não leva ID) ---
+@app.route('/seguranca')
+@login_required
+def seguranca():
+    lista_segurancas = seguranca_repository.listar_segurancas()
+    # Nota: En el HTML usaremos el nombre de variable 'seguranca_cibernetica'
+    return render_template('seguranca.html', seguranca_cibernetica=lista_segurancas)
+
+@app.route('/seguranca/cadastrar', methods=['GET', 'POST'])
+@login_required
+def cadastrar_seguranca():
+    if request.method == 'POST':
+        senha_forte = request.form['senha_forte']
+        autenticacao = request.form['autenticacao']
+        
+        # Capturamos el texto del formulario
+        ativo_texto = request.form.get('ativo', 'Não')
+        # Convertimos a número: 1 si es 'Sim', 0 si es 'Não'
+        ativo = 1 if ativo_texto == 'Sim' else 0
+        
+        seguranca_repository.inserir_seguranca(senha_forte, autenticacao, ativo)
+        return redirect(url_for('seguranca'))
+        
+    return render_template('cadastrar_seguranca.html')
+
+@app.route('/seguranca/<int:id_seguranca>', methods=['GET', 'POST'])
+@login_required
+def editar_seguranca(id_seguranca):
+    registro = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca)
+    
+    if request.method == 'POST':
+        senha_forte = request.form['senha_forte']
+        autenticacao = request.form['autenticacao']
+        
+        # Capturamos el texto y lo convertimos a número
+        ativo_texto = request.form.get('ativo', 'Não')
+        ativo = 1 if ativo_texto == 'Sim' else 0
+        
+        seguranca_repository.actualizar_seguranca(id_seguranca, senha_forte, autenticacao, ativo)
+        return redirect(url_for('seguranca'))
+        
+    return render_template('editar_seguranca.html', seguranca=registro)
+
+@app.route('/seguranca/deletar/<int:id_seguranca>')
+@login_required
+def deletar_seguranca(id_seguranca):
+    # Llama al repositorio para borrar el registro
+    seguranca_repository.deletar_seguranca(id_seguranca)
+    # Redirige de vuelta a la lista general
+    return redirect(url_for('seguranca'))
 
 # --- 1. RUTA PARA LISTAR (No lleva ID) ---
 @app.route('/bitacora')
@@ -147,6 +171,23 @@ def editar_bitacora(id_bitacora):
     # Si es GET, muestra el formulario con los datos
     return render_template('editar_bitacora.html', bitacora=bitacora)
 
+@app.route('/bitacora/cadastrar', methods=['GET', 'POST'])
+@login_required
+def cadastrar_bitacora():
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        acao = request.form['acao']
+        data = request.form['data']
+        
+        # Llama al repositorio para guardar los datos
+        bitacora_repository.inserir_bitacora(usuario, acao, data)
+        
+        # Redirige a la lista general
+        return redirect(url_for('bitacora'))
+        
+    # Si es GET, muestra el formulario vacío
+    return render_template('cadastrar_bitacora.html')
+
 # --- 1. FUNCIÓN PARA LISTAR (Esta NO lleva ID) ---
 @app.route('/vulnerabilidade')
 @login_required
@@ -174,36 +215,49 @@ def editar_vulnerabilidade(id_vulnerabilidade):
         
     return render_template('editar_vulnerabilidade.html', vulnerabilidade=vulnerabilidade)
 
-@app.route('/defensa_guardiao_da_red/', defaults={'id_seguranca_cibernetica': None})
+@app.route('/vulnerabilidade/cadastrar', methods=['GET', 'POST'])
+@login_required
+def cadastrar_vulnerabilidade():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        descricao = request.form['descricao']
+        impacto = request.form['impacto']
+        
+        # Llama al repositorio para guardar los datos
+        vulnerabilidade_repository.inserir_vulnerabilidade(nome, descricao, impacto)
+        
+        # Redirige a la lista general
+        return redirect(url_for('vulnerabilidade'))
+        
+    # Si es GET, muestra el formulario vacío
+    return render_template('cadastrar_vulnerabilidade.html')
+
 @app.route('/defensa_guardiao_da_red/<int:id_seguranca_cibernetica>', methods=['GET', 'POST'])
 @login_required
 def defensa_guardiao_da_red(id_seguranca_cibernetica):
-    
-    # Si no se pasa un ID, mostramos la página vacía
-    if id_seguranca_cibernetica is None:
-        return render_template('defensa_guardiao_da_red.html', seguranca=None)
-
+    # 1. Busca el registro en la base de datos
     seguranca = seguranca_repository.buscar_seguranca_cibernetica_por_id(id_seguranca_cibernetica)
     
     if seguranca is None:
-        return redirect(url_for('admin'))
+        return redirect(url_for('seguranca'))
 
+    # 2. Si el usuario envió el formulario (POST), actualiza
     if request.method == 'POST':
-        seguranca.localizacao = request.form.get('localizacao')
-        seguranca.monitoreo_de_patrones_de_inyeccao = request.form.get('monitoreo_de_patrones_de_inyeccao')
-        seguranca.shadow_IT = request.form.get('shadow_IT')
-        seguranca.registro = request.form.get('registro')
-        seguranca.alerta_de_tempo_real = request.form.get('alerta_de_tempo_real')
-        seguranca.linha_de_tempo = request.form.get('linha_de_tempo')
-        seguranca.ponto_cego = request.form.get('ponto_cego')
-        seguranca.rastreador = request.form.get('rastreador')
-        seguranca.seguro = request.form.get('seguro')
+        senha_forte = request.form.get('senha_forte')
+        autenticacao = request.form.get('autenticacao')
         
-        seguranca_repository.atualizar_seguranca_cibernetica(seguranca)
+        # ⚠️ AQUÍ ESTÁ LA CORRECCIÓN: Convertimos el texto a número
+        ativo_texto = request.form.get('ativo', 'Não').strip().lower() # Quita espacios y pone en minúscula
+        ativo = 1 if ativo_texto == 'sim' else 0
+        
+        # Guardamos en la base de datos (ahora 'ativo' es 1 o 0)
+        seguranca_repository.actualizar_seguranca(id_seguranca_cibernetica, senha_forte, autenticacao, ativo)
         
         return redirect(url_for('seguranca'))
 
+    # 3. Si es GET, muestra el formulario con los datos actuales
     return render_template('defensa_guardiao_da_red.html', seguranca=seguranca)
+
 
 
 if __name__ == '__main__':
